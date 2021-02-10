@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  sat:
+    image: docker-sat
+    build:
+      context: .
+
+  test:
+    image: docker-sat
+    volumes:
+      - ./test:/home
+    command: bash -c /home/run.sh
+    
+
+
+
