@@ -32,4 +32,5 @@ ENV PATH $PATH:"/opt/Allegorithmic/Substance_Automation_Toolkit"
 ENV SDAPI_SATPATH "/opt/Allegorithmic/Substance_Automation_Toolkit"
 WORKDIR /
 
-
+COPY ./src /home
+WORKDIR /the/workdir/path
