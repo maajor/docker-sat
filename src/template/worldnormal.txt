@@ -1,0 +1,13 @@
+"WorldNormal": {
+    "baker": "normal-from-mesh",
+    "parameters": {
+        "antialiasing": 2,
+        "average-normals": true,
+        "map-type": 0,
+        "normal-format": 1,
+        "output-name": "bake_worldnormal",
+        "udim": "1001",
+        "uv-set": 0
+    },
+    "sbsindex": 4
+}

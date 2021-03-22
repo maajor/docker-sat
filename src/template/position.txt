@@ -1,0 +1,15 @@
+"Position": {
+    "baker": "position-from-mesh",
+    "parameters": {
+        "antialiasing": 2,
+        "average-normals": true,
+        "axis": 0,
+        "mode": 0,
+        "normalization": 1,
+        "normalization-scale": 1,
+        "output-name": "bake_position",
+        "udim": "1001",
+        "uv-set": 0
+    },
+    "sbsindex": 3
+}

@@ -6,8 +6,7 @@ RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main re
 RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse" >> /etc/apt/sources.list
 RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse" >> /etc/apt/sources.list
 
-RUN apt-get update
-RUN apt-get install -y --fix-missing\
+RUN apt-get update && apt-get install -y --fix-missing\
     sudo \
     python3-pip \
     libglu1-mesa \
@@ -25,12 +24,14 @@ RUN mkdir /satInstaller && mkdir /opt/Allegorithmic
 COPY ./installer/Substance_Automation_Toolkit* /satInstaller
 RUN tar -xvf /satInstaller/Substance_Automation_Toolkit* -C /opt/Allegorithmic && rm -r /satInstaller
 
+RUN pip3 install jinja2 websockets
+
 # install
 WORKDIR /opt/Allegorithmic/Substance_Automation_Toolkit/Python API/
 RUN pip3 install Pysbs*.whl
 ENV PATH $PATH:"/opt/Allegorithmic/Substance_Automation_Toolkit"
 ENV SDAPI_SATPATH "/opt/Allegorithmic/Substance_Automation_Toolkit"
-WORKDIR /
+WORKDIR /home
 
 COPY ./src /home
-WORKDIR /the/workdir/path
+ENTRYPOINT [ "/bin/bash", "entrypoint.sh" ]

@@ -1,0 +1,21 @@
+"Curvature": {
+    "baker": "curvature-from-mesh-v2",
+    "parameters": {
+        "antialiasing": 2,
+        "auto-minmax": true,
+        "average-normals": true,
+        "max-dist-relative-scale": true,
+        "nb-second-rays": 32,
+        "normal": "",
+        "normal-format": 1,
+        "normal-world-space": false,
+        "output-name": "bake_curvature",
+        "sampling-radius": 0.0010000000474974513,
+        "self-occlusion": 0,
+        "tonemapping-max": 1,
+        "tonemapping-min": -1,
+        "udim": "1001",
+        "uv-set": 0
+    },
+    "sbsindex": 1
+}

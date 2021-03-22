@@ -12,3 +12,9 @@ docker-compose build sat
 ```shell
 docker-compose run test
 ```
+
+Doc  
+https://docs.substance3d.com/sat
+
+docker run -it -v d:/Repo/h-sat/temp:/home docker-sat
+sbsbaker run --json preset.json

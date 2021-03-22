@@ -1,40 +1,112 @@
-import time, os
+import time, os, math
 import logging
 import asyncio
 import websockets
+from jinja2 import Environment, PackageLoader, select_autoescape
 import sat
 
-async def handle_bake(ws):
+def mk_task_dir():
     current_time = str(int(time.time()))
     dir_name = "/home/{0}".format(current_time)
     if not os.path.exists(dir_name):
         os.mkdir(dir_name)
+    return dir_name
 
-    await ws.send("Bake Init")
-    low = await ws.recv()
-    lowname = "/home/{0}/low.fbx".format(current_time)
-    with open(lowname, 'wb') as file:
-        file.write(low)
+async def receive_data(ws, manifest, item_name, dir_name):
+    params = {}
+    data = manifest[item_name]
+    item_data = await ws.recv()
+    if 'path' in data:
+        filename = os.path.basename(data['path'])
+        item_savepath = "{0}/{1}".format(dir_name, filename)
+        with open(item_savepath, 'wb') as file:
+            file.write(item_data)
+        params['entry'] = (item_name, item_savepath)
+    else:
+        value = data['value']
+        params['value'] = (item_name, value)
+    return params
 
-    high = await ws.recv()
-    highname = "/home/{0}/high.fbx".format(current_time)
-    with open(highname, 'wb') as file:
-        file.write(high)
+def build_config(channels, source, target, size, dir_name):
+    _, size_num = channels['value']
+    _, channels_str = channels['value']
+    _, source_path = source['entry']
+    _, target_path = target['entry']
+    size_ln = int(math.log2(size_num))
+
+    config_input = {}
+    config_input['channels'] = []
     
-    config = await ws.recv()
-    configname = "/home/{0}/config.json".format(current_time)
-    with open(configname, 'wb') as file:
-        file.write(config)
+    channel_names = channels_str.split(",")
+    for channel in channel_names:
+        channel_template = "template/{0}.txt".format(channel)
+        if os.path.exists(channel_template):
+            with open(channel_template, 'r') as f:
+                template = f.read()
+                config_input['channels'].append(template)
 
-    await ws.send("Bake Start")
+    config_input['source_path'] = source_path
+    config_input['target_path'] = target_path
+    config_input['size'] = size_ln
+
+    env = Environment(
+        loader=PackageLoader('.', 'templates'),
+        autoescape=select_autoescape(['txt'])
+    )
+    template = env.get_template('preset.txt')
+    config_json = template.render(config=config_input)
+    config_path = "{0}/config.json".format(dir_name)
+    with open(config_path, "w") as f:
+        f.write(config_json)
+    return config_path
+
+async def handle_bake(ws):
+    dir_name = mk_task_dir()
+
+    manifest = await ws.recv()
+
+    size = await receive_data(ws, manifest, 'size', dir_name)
+    channels = await receive_data(ws, manifest, 'channels', dir_name)
+    source = await receive_data(ws, manifest, 'source', dir_name)
+    target = await receive_data(ws, manifest, 'target', dir_name)
+
+    config_path = build_config(channels, source, target, size, dir_name)
+
     try:
-        proc = sat.bake(configname, dir_name)
-        stdout, stderr = proc.communicate()
-        print(stdout)
-        await ws.send("Bake Finished")
+        handle = sat.bake(config_path, dir_name)
+        for result in handle.get_results():
+            for output in result.outputs:
+                print(output.value)
     except Exception as e:
         print(str(e))
-        await ws.send("Bake Failed")
+
+    await ws.close()
+
+async def handle_render(ws):
+    dir_name = mk_task_dir()
+    params = {'output_path':dir_name}
+    params['entries'] = []
+    params['values'] = []
+
+    manifest = await ws.recv()
+
+    for item in manifest:
+        item_data = await receive_data(ws, manifest, item, dir_name)
+        if 'entry' in item_data:
+            params['entries'].append(item_data['entry'])
+        else:
+            params['values'].append(item_data['value'])
+    
+    sbsar_name = os.path.basename(manifest['sbsar']['path'])
+    sbsar_path = "{0}/{1}".format(dir_name, sbsar_name)
+
+    try:
+        handle = sat.render(sbsar_path, **params)
+        for result in handle.get_results():
+            for output in result.outputs:
+                print(output.value)
+    except Exception as e:
+        print(str(e))
 
     await ws.close()
 
@@ -42,20 +114,16 @@ async def hello(websocket, path):
 
     if path == "/bake":
         await handle_bake(websocket)
+    elif path == "/render":
+        await handle_render(websocket)
     else:
         name = await websocket.recv()
         print(f"< {name}")
         print(path)
 
         greeting = f"Hello {name}!"
-
         await websocket.send(greeting)
-        await asyncio.sleep(10)
-
-        greeting = f"Hello Again {name}!"
-        await websocket.send(greeting)
-
-        print(f"> {greeting}")
+        websocket.close()
 
 start_server = websockets.serve(hello, "localhost", 1028)
 

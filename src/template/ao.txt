@@ -1,0 +1,25 @@
+"AO": {
+    "baker": "ambient-occlusion-from-mesh",
+    "parameters": {
+        "antialiasing": 2,
+        "attenuation": 2,
+        "average-normals": true,
+        "enable-ground-plane": false,
+        "ground-offset": 0,
+        "ignore-backface-secondary": 0,
+        "max-dist": 1,
+        "max-dist-relative-scale": true,
+        "min-dist": 9.999999747378752e-06,
+        "nb-second-rays": 64,
+        "normal": "",
+        "normal-format": 1,
+        "normal-world-space": false,
+        "output-name": "bake_ao",
+        "ray-distrib": 1,
+        "self-occlusion": 0,
+        "spread-angle": 180,
+        "udim": "1001",
+        "uv-set": 0
+    },
+    "sbsindex": 0
+}
