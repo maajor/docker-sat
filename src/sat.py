@@ -1,8 +1,7 @@
 import pysbs
 
 def bake(config, cwd):
-    handle = pysbs.batchtools.sbsbaker_run(json=config, cwd=cwd, output_handler=True)
-    return handle
+    return pysbs.batchtools.sbsbaker_run(json=config, cwd=cwd)
 
 def _build_render_args(**kwargs):
     pargs = []

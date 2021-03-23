@@ -16,7 +16,7 @@ async def receive_data(ws, manifest, item_name, dir_name):
     params = {}
     data = manifest[item_name]
     if 'path' in data:
-        filename = os.path.basename(data['path'])
+        filename = os.path.basename(data['path'].replace("\\", "/"))
         item_savepath = "{0}/{1}".format(dir_name, filename)
         slice_count = await ws.recv()
         with open(item_savepath, 'wb') as file:
@@ -57,6 +57,7 @@ def build_config(channels, source, target, size, dir_name):
     )
     template = env.get_template('preset.txt')
     config_json = template.render(config=config_input)
+    print(config_json)
     config_path = "{0}/config.json".format(dir_name)
     with open(config_path, "w") as f:
         f.write(config_json)
@@ -67,6 +68,7 @@ async def handle_bake(ws):
 
     manifest = await ws.recv()
     manifest = json.loads(manifest)
+    print(manifest)
 
     size = await receive_data(ws, manifest, 'size', dir_name)
     channels = await receive_data(ws, manifest, 'channels', dir_name)
@@ -75,10 +77,9 @@ async def handle_bake(ws):
     config_path = build_config(channels, source, target, size, dir_name)
 
     try:
-        handle = sat.bake(config_path, dir_name)
-        for result in handle.get_results():
-            for output in result.outputs:
-                print(output.value)
+        proc = sat.bake(config_path, dir_name)
+        std, err = proc.communicate()
+        print("bake complete")
     except Exception as e:
         print(str(e))
 
@@ -99,7 +100,7 @@ async def handle_render(ws):
         else:
             params['values'].append(item_data['value'])
     
-    sbsar_name = os.path.basename(manifest['sbsar']['path'])
+    sbsar_name = os.path.basename(manifest['sbsar']['path'].replace("\\", "/"))
     sbsar_path = "{0}/{1}".format(dir_name, sbsar_name)
 
     try:

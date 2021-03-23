@@ -30,7 +30,7 @@ RUN pip3 install jinja2 websockets
 WORKDIR /opt/Allegorithmic/Substance_Automation_Toolkit/Python API/
 RUN pip3 install Pysbs*.whl
 ENV PATH $PATH:"/opt/Allegorithmic/Substance_Automation_Toolkit"
-ENV SDAPI_SATPATH "/opt/Allegorithmic/Substance_Automation_Toolkit"
+ENV SAT_INSTALL_PATH "/opt/Allegorithmic/Substance_Automation_Toolkit"
 WORKDIR /home
 
 COPY ./src /home

@@ -1,7 +1,7 @@
 {
     {% for channel in config.channels %}
-    {{ channel }}
-    {% endfor %},
+    {{ channel }},
+    {% endfor %}
     "apply-diffusion": true,
     "average-normals": true,
     "cage-mesh": "",
