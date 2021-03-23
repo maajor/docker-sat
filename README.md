@@ -18,3 +18,7 @@ https://docs.substance3d.com/sat
 
 docker run -it -v d:/Repo/h-sat/temp:/home docker-sat
 sbsbaker run --json preset.json
+
+docker-compose up sat -d
+
+docker-compose logs sat

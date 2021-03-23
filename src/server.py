@@ -1,8 +1,8 @@
-import time, os, math
+import time, os, math, json
 import logging
 import asyncio
 import websockets
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 import sat
 
 def mk_task_dir():
@@ -15,24 +15,27 @@ def mk_task_dir():
 async def receive_data(ws, manifest, item_name, dir_name):
     params = {}
     data = manifest[item_name]
-    item_data = await ws.recv()
     if 'path' in data:
         filename = os.path.basename(data['path'])
         item_savepath = "{0}/{1}".format(dir_name, filename)
+        slice_count = await ws.recv()
         with open(item_savepath, 'wb') as file:
-            file.write(item_data)
+            for i in range(int(slice_count)):
+                item_data = await ws.recv()
+                file.write(item_data)
         params['entry'] = (item_name, item_savepath)
     else:
+        item_data = await ws.recv()
         value = data['value']
         params['value'] = (item_name, value)
     return params
 
 def build_config(channels, source, target, size, dir_name):
-    _, size_num = channels['value']
+    _, size_num = size['value']
     _, channels_str = channels['value']
     _, source_path = source['entry']
     _, target_path = target['entry']
-    size_ln = int(math.log2(size_num))
+    size_ln = int(math.log2(int(size_num)))
 
     config_input = {}
     config_input['channels'] = []
@@ -50,8 +53,7 @@ def build_config(channels, source, target, size, dir_name):
     config_input['size'] = size_ln
 
     env = Environment(
-        loader=PackageLoader('.', 'templates'),
-        autoescape=select_autoescape(['txt'])
+        loader=FileSystemLoader('/home/template')
     )
     template = env.get_template('preset.txt')
     config_json = template.render(config=config_input)
@@ -64,12 +66,12 @@ async def handle_bake(ws):
     dir_name = mk_task_dir()
 
     manifest = await ws.recv()
+    manifest = json.loads(manifest)
 
     size = await receive_data(ws, manifest, 'size', dir_name)
     channels = await receive_data(ws, manifest, 'channels', dir_name)
-    source = await receive_data(ws, manifest, 'source', dir_name)
     target = await receive_data(ws, manifest, 'target', dir_name)
-
+    source = await receive_data(ws, manifest, 'source', dir_name)
     config_path = build_config(channels, source, target, size, dir_name)
 
     try:
@@ -125,7 +127,7 @@ async def hello(websocket, path):
         await websocket.send(greeting)
         websocket.close()
 
-start_server = websockets.serve(hello, "localhost", 1028)
+start_server = websockets.serve(hello, "0.0.0.0", 1028, max_size=2 ** 22, timeout=60, max_queue= 2 ** 10)
 
 try:
     asyncio.get_event_loop().run_until_complete(start_server)

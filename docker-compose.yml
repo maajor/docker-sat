@@ -5,6 +5,8 @@ services:
     image: docker-sat
     build:
       context: .
+    ports:
+      - 1028:1028
 
   test:
     image: docker-sat

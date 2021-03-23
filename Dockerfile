@@ -34,4 +34,6 @@ ENV SDAPI_SATPATH "/opt/Allegorithmic/Substance_Automation_Toolkit"
 WORKDIR /home
 
 COPY ./src /home
+EXPOSE 1028
+
 ENTRYPOINT [ "/bin/bash", "entrypoint.sh" ]
