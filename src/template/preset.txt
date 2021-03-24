@@ -6,11 +6,9 @@
     "average-normals": true,
     "cage-mesh": "",
     "dilation-width": 4,
-    "distance-with": 0,
     "highdef-mesh": "{{ config.source_path }}",
     "ignore-backface": true,
     "inputs": "{{ config.target_path }}",
-    "invert-skew": false,
     "match": 0,
     "max-frontal": 0.009999999776482582,
     "max-rear": 0.009999999776482582,
@@ -21,12 +19,9 @@
         "width":{{ config.size }}
     },
     "relative-to-bbox": true,
-    "sbsoutput-place-into-specific-folder": false,
-    "sbsoutput-resource-method": 1,
     "skew-correction": false,
     "skew-map": "",
     "subsampling": 2,
     "use-lowdef-as-highdef": false,
-    "uv-set": 0,
-    "uvTiles": ""
+    "uv-set": 0
 }
