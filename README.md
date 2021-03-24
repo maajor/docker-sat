@@ -21,3 +21,6 @@ docker-compose up sat -d
 # run test task client
 python client/test.py
 ```
+
+It will bake a texture-set (ao, normal, position, etc) from highres mesh to lowres mesh,
+and feed the result to a sbsar to generate a mask.  
