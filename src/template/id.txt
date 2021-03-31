@@ -1,0 +1,13 @@
+"color": {
+        "baker": "color-from-mesh",
+        "parameters": {
+            "antialiasing": 2,
+            "average-normals": true,
+            "color-generator": 1,
+            "color-source": 0,
+            "output-name": "bake_id",
+            "udim": "1001",
+            "uv-set": 0
+        },
+        "sbsindex": 2
+    }

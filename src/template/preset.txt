@@ -9,7 +9,7 @@
     "highdef-mesh": "{{ config.source_path }}",
     "ignore-backface": true,
     "inputs": "{{ config.target_path }}",
-    "match": 0,
+    "match": 1,
     "max-frontal": 0.009999999776482582,
     "max-rear": 0.009999999776482582,
     "output-format": "tga",

@@ -17,5 +17,5 @@
         "udim": "1001",
         "uv-set": 0
     },
-    "sbsindex": 1
+    "sbsindex": 5
 }

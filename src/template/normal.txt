@@ -9,5 +9,5 @@
         "udim": "1001",
         "uv-set": 0
     },
-    "sbsindex": 2
+    "sbsindex": 0
 }

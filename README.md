@@ -16,7 +16,7 @@ docker-compose build sat
 ## Run
 ```sh
 # start sat service in background
-docker-compose up sat -d
+docker-compose up -d sat
 
 # run test task client
 python client/test.py
